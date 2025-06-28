@@ -1,9 +1,10 @@
 <?php
 
     require '../common.php';
-    $info = $manager->getAllPosts(1120081060969840981, 5);
+//    $info = $manager->getAllPosts(1120081060969840981, 5);
+    $info = $manager->getAllPosts();
 
-//    print_r($info);  exit;;
+    print_r($info);  exit;;
 
     foreach ($info as $k => $v)
     {

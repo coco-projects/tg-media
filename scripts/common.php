@@ -35,12 +35,6 @@
     $manager->setEnableRedisLog(true);
     $manager->setEnableEchoLog(true);
 
-    // $manager->setTelegraphProxy('192.168.0.111:1080');
-    $manager->setTelegraphPageBrandTitle('汪汪');
-    $manager->setTelegraphQueueMaxTimes(50);
-    $manager->setTelegraphQueueDelayMs(0);
-    $manager->setTelegraphTimeout(50);
-
     $manager->setBeforePostFilesInsert(function($files) use ($manager) {
 
         $fileTab = $manager->getFileTable();

@@ -42,11 +42,11 @@
     {
         public MissionManager $queueMissionManager;
         protected ?Container  $container       = null;
-        protected bool       $debug           = false;
-        protected bool       $enableRedisLog  = false;
-        protected bool       $enableEchoLog   = false;
-        protected array      $tables          = [];
-        protected array      $contentsFilters = [];
+        protected bool        $debug           = false;
+        protected bool        $enableRedisLog  = false;
+        protected bool        $enableEchoLog   = false;
+        protected array       $tables          = [];
+        protected array       $contentsFilters = [];
 
         //如果开启，一个消息中所有媒体都下载完成才会写入file，关闭的话，下载一个写入一个
         protected bool   $strictMode    = true;
@@ -81,7 +81,7 @@
         protected int     $telegramMediaDownloadDelayInSecond = 1;
         protected ?string $telegramWebHookUrl                 = null;
 
-        protected int     $scanDelayMs    = 3000;
+        protected int $scanDelayMs = 3000;
 
         protected int $localServerPort = 8081;
         protected int $statisticsPort  = 8082;
@@ -662,7 +662,6 @@
         }
 
 
-
         /**
          * 扫描curl请求完成的结果 json，读取文件中的内容，将文件移动到指定文件夹，更新 path，file_status
          * file_id 可能重复
@@ -736,7 +735,7 @@
                         $updateInfo = $msgTable->tableIns()->where($msgTable->getPkField(), $id)->find();
 
                         // videos
-                        $fileType =  explode('/',  $updateInfo[$msgTable->getMimeTypeField()])[0];
+                        $fileType = explode('/', $updateInfo[$msgTable->getMimeTypeField()])[0];
 
                         $targetPath = static::makePath($jsonInfo['result']['file_id'], $fileType) . '.' . $updateInfo[$msgTable->getExtField()];
 
@@ -771,8 +770,7 @@
 
                                 $res = $msgTable->tableIns()
                                     ->where($msgTable->getFileIdField(), '=', $jsonInfo['result']['file_id'])
-                                    ->where($msgTable->getPathField(), '=', '')
-                                    ->update($data);
+                                    ->where($msgTable->getPathField(), '=', '')->update($data);
 
                                 $this->getToFileMoveScanner()->logInfo('更新重复文件 path：' . $res);
                                 $this->getToFileMoveScanner()->logInfo('删除：' . $fullSourcePath);
@@ -880,7 +878,6 @@
             LoopTool::getIns(host: $this->redisHost, password: $this->redisPassword, port: $this->redisPort, db: $this->redisDb)
                 ->stop($this->scannerFileMove);
         }
-
 
 
         /**
@@ -1052,7 +1049,8 @@
                         {
                             $fileTable->tableIns()->insertAll($files);
 
-                            $this->getMigrationScanner()->logInfo("mediaGroupId: $mediaGroupId: 写入 file 表:" . count($files) . '个文件');
+                            $this->getMigrationScanner()
+                                ->logInfo("mediaGroupId: $mediaGroupId: 写入 file 表:" . count($files) . '个文件');
 
                             if (is_callable($this->beforePostFilesInsert))
                             {
@@ -1135,7 +1133,6 @@
             LoopTool::getIns(host: $this->redisHost, password: $this->redisPassword, port: $this->redisPort, db: $this->redisDb)
                 ->stop($this->scannerMigration);
         }
-
 
 
         /*
@@ -1406,10 +1403,26 @@
          * ---------------------------------------------------------
          * */
 
-        protected function getTelegramApiGuzzle(): Client
+        protected function initCacheManager(): static
         {
-            return $this->container->get('telegramApiGuzzle');
+            $this->container->set('cacheManager', function(Container $container) {
+                $marshaller   = new DeflateMarshaller(new DefaultMarshaller());
+                $cacheManager = new RedisAdapter($container->get('redisClient'), $this->cacheNamespace, 0, $marshaller);
+
+                return $cacheManager;
+            });
+
+            return $this;
         }
+
+        public function getCacheManager(): RedisAdapter
+        {
+            return $this->container->get('cacheManager');
+        }
+
+        /*
+         * ---------------------------------------------------------
+         * */
 
         protected function initTelegramApiGuzzle(): static
         {
@@ -1423,25 +1436,9 @@
             return $this;
         }
 
-        /*
-         * ---------------------------------------------------------
-         * */
-
-        public function getCacheManager(): RedisAdapter
+        protected function getTelegramApiGuzzle(): Client
         {
-            return $this->container->get('cacheManager');
-        }
-
-        protected function initCacheManager(): static
-        {
-            $this->container->set('cacheManager', function(Container $container) {
-                $marshaller   = new DeflateMarshaller(new DefaultMarshaller());
-                $cacheManager = new RedisAdapter($container->get('redisClient'), $this->cacheNamespace, 0, $marshaller);
-
-                return $cacheManager;
-            });
-
-            return $this;
+            return $this->container->get('telegramApiGuzzle');
         }
 
         /*
@@ -1734,7 +1731,7 @@
             $picPositions = static::splitVideo($picCount, $duration);
 
             $this->queueMissionManager->logInfo(implode([
-                "makeVideoCoverQueue - 时长：$duration - $videoFullPath"
+                "makeVideoCoverQueue - 时长：$duration - $videoFullPath",
             ]));
 
             foreach ($picPositions as $positionSecondKey => $positionSecond)
@@ -1764,7 +1761,7 @@
                     $ffmpeg = \FFMpeg\FFMpeg::create($ffmpegConfig);
 
                     $video = $ffmpeg->open($fileFullPath);
-                    $video->frame(\FFMpeg\Coordinate\TimeCode::fromSeconds($positionSecond))->save($coverPath,true);
+                    $video->frame(\FFMpeg\Coordinate\TimeCode::fromSeconds($positionSecond))->save($coverPath, true);
                 });
 
                 $this->queueMissionManager->logInfo(implode([
@@ -1780,7 +1777,7 @@
             $queue = $this->makeVideoCoverQueue;
 
             $queue->setContinuousRetry(true);
-            $queue->setDelayMs($this->telegraphQueueDelayMs);
+            $queue->setDelayMs(0);
             $queue->setEnable(true);
             $queue->setMaxTimes(5);
             $queue->setIsRetryOnError(true);
@@ -1803,7 +1800,7 @@
 
                 //封面图片信息写入数据库
                 $fileTable = $this->getFileTable();
-                $result = $fileTable->tableIns()->insert([
+                $result    = $fileTable->tableIns()->insert([
                     $fileTable->getPkField()     => $fileTable->calcPk(),
 
                     // 1120080870326144974
@@ -1812,18 +1809,18 @@
                     // 2025-06/16/photos/E/9110579685264727-1.jpg
                     $fileTable->getPathField()   => $mission->saveCoverPath,
 
-                    $fileTable->getFileSizeField()       => $fileSize,
+                    $fileTable->getFileSizeField() => $fileSize,
 
                     // cover-9110579685264727-1
-                    $fileTable->getFileNameField()       => "cover-{$mission->videoFileNameId}-{$mission->positionSecondKey}",
+                    $fileTable->getFileNameField() => "cover-{$mission->videoFileNameId}-{$mission->positionSecondKey}",
 
                     $fileTable->getExtField()            => 'jpg',
                     $fileTable->getMimeTypeField()       => 'image/jpeg',
                     $fileTable->getOriginExtField()      => 'jpg',
                     $fileTable->getOriginMimeTypeField() => 'image/jpeg',
 
-                    $fileTable->getMediaGroupIdField()   => $mission->mediaGroupId,
-                    $fileTable->getTimeField()           => time(),
+                    $fileTable->getMediaGroupIdField() => $mission->mediaGroupId,
+                    $fileTable->getTimeField()         => time(),
                 ]);
 
                 if ($result == 1)
@@ -1856,7 +1853,7 @@
             1080,
             //            1440,
             //            2160,
-        ],bool $deleteSource = false): void
+        ], bool                                  $deleteSource = false): void
         {
             $fileTab = $this->getFileTable();
 
@@ -1892,7 +1889,7 @@
             @chmod(dirname($keyFullPath), 0777);
             @chown(dirname($keyFullPath), $this->mediaOwner);
 
-            $ffmpegConfig           = [
+            $ffmpegConfig = [
                 'ffmpeg.binaries'  => dirname(__DIR__) . '/tg-bot-server/bin/ffmpeg',
                 'ffprobe.binaries' => dirname(__DIR__) . '/tg-bot-server/bin/ffprobe',
                 'timeout'          => 36000,
@@ -1921,7 +1918,7 @@
                 $keyUri,
             ]);
 
-            $mission->setCallback(function($videoFullPath, $tsFullPath, $keyFullPath, $keyUri) use ($ffmpegConfig, $sectionSeconds, $threads, $streamFormat,$representations) {
+            $mission->setCallback(function($videoFullPath, $tsFullPath, $keyFullPath, $keyUri) use ($ffmpegConfig, $sectionSeconds, $threads, $streamFormat, $representations) {
                 $ffmpeg = \Streaming\FFMpeg::create($ffmpegConfig);
 
                 $video = $ffmpeg->open($videoFullPath);
@@ -1935,8 +1932,7 @@
                     $v = $video->hls()->hevc();
                 }
 
-                $v->encryption($keyFullPath, $keyUri, 5)
-                    ->setHlsTime((string)$sectionSeconds)
+                $v->encryption($keyFullPath, $keyUri, 5)->setHlsTime((string)$sectionSeconds)
                     ->autoGenerateRepresentations($representations)->save($tsFullPath);
             });
 
@@ -1952,7 +1948,7 @@
             $queue = $this->convertM3u8Queue;
 
             $queue->setContinuousRetry(true);
-            $queue->setDelayMs($this->telegraphQueueDelayMs);
+            $queue->setDelayMs(0);
             $queue->setEnable(true);
             $queue->setMaxTimes(5);
             $queue->setIsRetryOnError(true);
@@ -1995,6 +1991,11 @@
                 {
                     //删除原 mp4
                     @unlink($mission->videoFullPath);
+
+                    $fileTable->tableIns()->where($fileTable->getPkField(), '=', $mission->fileId)->update([
+                        $fileTable->getOriginExtField()      => '',
+                        $fileTable->getOriginMimeTypeField() => '',
+                    ]);
                 }
             };
 
@@ -2035,7 +2036,7 @@
             $queue = $this->cdnPrefetchQueue;
 
             $queue->setContinuousRetry(true);
-            $queue->setDelayMs($this->telegraphQueueDelayMs);
+            $queue->setDelayMs(0);
             $queue->setEnable(true);
             $queue->setMaxTimes(5);
             $queue->setIsRetryOnError(true);
@@ -2070,33 +2071,6 @@
             return $this->queueMissionManager->getAllQueueInfo();
         }
 
-        public function setTelegraphQueueDelayMs(int $telegraphQueueDelayMs): static
-        {
-            $this->telegraphQueueDelayMs = $telegraphQueueDelayMs;
-
-            return $this;
-        }
-
-        public function setTelegraphTimeout(int $telegraphTimeout): static
-        {
-            $this->telegraphTimeout = $telegraphTimeout;
-
-            return $this;
-        }
-
-        public function setTelegraphPageBrandTitle(?string $telegraphPageBrandTitle): static
-        {
-            $this->telegraphPageBrandTitle = $telegraphPageBrandTitle;
-
-            return $this;
-        }
-
-        public function setTelegraphQueueMaxTimes(int $telegraphQueueMaxTimes): static
-        {
-            $this->telegraphQueueMaxTimes = $telegraphQueueMaxTimes;
-
-            return $this;
-        }
 
         /*
         *
@@ -2105,7 +2079,6 @@
         * ------------------------------------------------------
         *
         */
-
 
         /**
          * -2 表都没创建
@@ -2227,7 +2200,7 @@
             return $data;
         }
 
-        public function getAllPosts($continuePostId = null,$row = 100): array
+        public function getAllPosts($continuePostId = null, $row = 100): array
         {
             $postTable = $this->getPostTable();
             $fileTable = $this->getFileTable();
@@ -2270,10 +2243,26 @@
                 $media[$postId]['post'] = $post;
             }
 
-            foreach ($files as $k => $fileInfo)
+            foreach ($files as $k => &$fileInfo)
             {
                 // cover-9110579685264727-1
                 $fileNameInfo = static::parseFileNameId($fileInfo[$fileTable->getFileNameField()]);
+
+                if ($fileInfo[$fileTable->getOriginExtField()])
+                {
+                    if ($fileInfo[$fileTable->getExtField()] == 'm3u8')
+                    {
+                        $fileInfo['origin_file_path'] = strtr($fileInfo[$fileTable->getPathField()], ["/hls.m3u8" => "." . $fileInfo[$fileTable->getOriginExtField()],]);
+                    }
+                    else
+                    {
+                        $fileInfo['origin_file_path'] = $fileInfo[$fileTable->getPathField()];
+                    }
+                }
+                else
+                {
+                    $fileInfo['origin_file_path'] = '';
+                }
 
                 // 2025-06/16/photos/E/9110579685264727-1.jpg
                 $pathId = static::parsePathId($fileInfo[$fileTable->getPathField()]);
@@ -2336,7 +2325,6 @@
             {
                 $media[$postId_]['document'] = $document;
             }
-
 
             return $media;
         }
@@ -2492,7 +2480,7 @@
                     ],
                 ])->count();
 
-                $this->queueMissionManager->logInfo( $gropId . ',文件个数:[' . $fileCount . ']--' . static::inlineText($content));
+                $this->queueMissionManager->logInfo($gropId . ',文件个数:[' . $fileCount . ']--' . static::inlineText($content));
 
                 if (!$fileCount && !$content)
                 {
@@ -2557,9 +2545,11 @@
             }
         }
 
-        public function deleteVideoSourceFile():void{
+        public function deleteVideoSourceFile(): void
+        {
 
         }
+
         /*-------------------------------------------------------------------*/
 
         protected function initQueue(): static

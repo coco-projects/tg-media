@@ -12,7 +12,7 @@
 
         public array $fieldsSqlMap = [
             "type_id"        => "`__FIELD__NAME__` BIGINT (11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'type_id',",
-            "contents"       => "`__FIELD__NAME__` LONGTEXT COLLATE utf8mb4_unicode_ci COMMENT '文本信息',",
+            "contents"       => "`__FIELD__NAME__` LONGTEXT COLLATE utf8mb4_unicode_520_ci COMMENT '文本信息',",
             "media_group_id" => "`__FIELD__NAME__` bigint(11) unsigned NOT NULL DEFAULT '0' COMMENT 'media_group_id',",
             "date"           => "`__FIELD__NAME__` INT (10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '信息发送时间',",
             "time"           => "`__FIELD__NAME__` INT (10) UNSIGNED NOT NULL DEFAULT '0',",

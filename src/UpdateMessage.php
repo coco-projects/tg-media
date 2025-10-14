@@ -33,6 +33,7 @@
         protected static Snowflake|null $snowflake   = null;
         protected array                 $messageRow;
         protected array                 $messageBody = [];
+        public array                    $tags        = [];
 
         public int    $messageFromType    = 0;
         public int    $messageLoadType    = 0;
@@ -205,7 +206,16 @@
             if (isset($this->messageBody['text']))
             {
                 $this->messageLoadType = static::MSG_CARRIER_TYPE_TEXT;
-                $this->text            = $this->messageBody['text'];
+
+                if (isset($this->messageBody['text']) && count($this->messageBody['entities']))
+                {
+                    $this->text = static::parseCaptionWithEntities($this->messageBody['text'], $this->messageBody['entities']);
+                    $this->tags = static::extractHashtags($this->messageBody['text'], $this->messageBody['entities']);
+                }
+                else
+                {
+                    $this->text = $this->messageBody['text'];
+                }
 
                 $this->mimeType = '';
                 $this->ext      = '';
@@ -292,7 +302,15 @@
 
             if (isset($this->messageBody['caption']))
             {
-                $this->caption = $this->messageBody['caption'];
+                if (isset($this->messageBody['caption_entities']) && count($this->messageBody['caption_entities']))
+                {
+                    $this->caption = static::parseCaptionWithEntities($this->messageBody['caption'], $this->messageBody['caption_entities']);
+                    $this->tags    = static::extractHashtags($this->messageBody['caption'], $this->messageBody['caption_entities']);
+                }
+                else
+                {
+                    $this->caption = $this->messageBody['caption'];
+                }
             }
 
             if (isset($this->messageBody['media_group_id']))
@@ -316,7 +334,23 @@
             return $this;
         }
 
-        public static function getExt(array $msgBody, string $default = '-'): string
+        public function isNeededType(): bool
+        {
+            return in_array($this->messageLoadType, [
+                    static::MSG_CARRIER_TYPE_TEXT,
+                    static::MSG_CARRIER_TYPE_VIDEO,
+                    static::MSG_CARRIER_TYPE_PHOTO,
+                    static::MSG_CARRIER_TYPE_AUDIO,
+                    static::MSG_CARRIER_TYPE_DOCUMENT,
+                ]) and in_array($this->messageFromType, [
+                    static::MSG_FROM_TYPE_MESSAGE,
+                    static::MSG_FROM_TYPE_EDITED_MESSAGE,
+                    static::MSG_FROM_TYPE_CHANNEL_POST,
+                    static::MSG_FROM_TYPE_EDITED_CHANNEL_POST,
+                ]);
+        }
+
+        protected static function getExt(array $msgBody, string $default = '-'): string
         {
 
             if (isset($msgBody['mime_type']) && isset(static::$mimeTypesMap[$msgBody['mime_type']]))
@@ -335,27 +369,94 @@
             return strtolower($ext);
         }
 
-        public static function getMimeType(array $msgBody, string $default = '-'): string
+        protected static function getMimeType(array $msgBody, string $default = '-'): string
         {
             return $msgBody['mime_type'] ?? $default;
         }
 
-        public function isNeededType(): bool
+        // Function to calculate the length of a string in UTF-16 code points.
+        protected static function mbStrlen(string $text): int
         {
-            return in_array($this->messageLoadType, [
-                    static::MSG_CARRIER_TYPE_TEXT,
-                    static::MSG_CARRIER_TYPE_VIDEO,
-                    static::MSG_CARRIER_TYPE_PHOTO,
-                    static::MSG_CARRIER_TYPE_AUDIO,
-                    static::MSG_CARRIER_TYPE_DOCUMENT,
-                ]) and in_array($this->messageFromType, [
-                    static::MSG_FROM_TYPE_MESSAGE,
-                    static::MSG_FROM_TYPE_EDITED_MESSAGE,
-                    static::MSG_FROM_TYPE_CHANNEL_POST,
-                    static::MSG_FROM_TYPE_EDITED_CHANNEL_POST,
-                ]);
+            $length     = 0;
+            $textlength = \strlen($text);
+            for ($x = 0; $x < $textlength; $x++)
+            {
+                $char = \ord($text[$x]);
+                if (($char & 0xc0) != 0x80)
+                {
+                    $length += 1 + ($char >= 0xf0 ? 1 : 0);
+                }
+            }
+
+            return $length;
         }
 
+        // Function to substring a string based on UTF-16 encoding.
+        protected static function mbSubstr(string $text, int $offset, ?int $length = null): string
+        {
+            /** @var string */
+            $converted = \mb_convert_encoding($text, 'UTF-16');
+
+            /** @var string */
+            return \mb_convert_encoding(\substr($converted, $offset << 1, $length === null ? null : ($length << 1),), 'UTF-8', 'UTF-16',);
+        }
+
+        // Main function to parse text with entities.
+        protected static function parseCaptionWithEntities($text, $caption_entities): string
+        {
+            $result     = [];
+            $lastOffset = 0;
+
+            foreach ($caption_entities as $entity)
+            {
+                if ($entity['type'] === 'text_link')
+                {
+                    // Append text before this entity
+                    $start    = $entity['offset'];
+                    $length   = $entity['length'];
+                    $result[] = self::mbSubstr($text, $lastOffset, $start - $lastOffset);
+
+                    // Append the link text
+                    $linkText = self::mbSubstr($text, $start, $length);
+                    $result[] = "{<$linkText><{$entity['url']}>}";
+
+                    // Update last offset
+                    $lastOffset = $start + $length;
+                }
+            }
+
+            // Append any remaining text after the last entity
+            if ($lastOffset < self::mbStrlen($text))
+            {
+                $result[] = self::mbSubstr($text, $lastOffset);
+            }
+
+            return implode('', $result);
+        }
+
+        protected function extractHashtags($caption, $caption_entities): array
+        {
+            // 初始化保存hashtag文本的数组
+            $hashtags = [];
+
+            // 遍历所有实体
+            foreach ($caption_entities as $entity)
+            {
+                // 检查实体类型是否为hashtag
+                if ($entity['type'] === 'hashtag')
+                {
+                    // 使用mbSubstr方法获取hashtag的文本
+                    $hashtagLength = $entity['length'];
+                    $hashtagOffset = $entity['offset'];
+
+                    // 获取hashtag文本
+                    $hashtag    = self::mbSubstr($caption, $hashtagOffset, $hashtagLength);
+                    $hashtags[] = $hashtag;
+                }
+            }
+
+            return $hashtags;
+        }
     }
 
 

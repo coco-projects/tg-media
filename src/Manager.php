@@ -1005,14 +1005,14 @@
                             }
                         }
 
-                        $this->getMigrationScanner()->logInfo('原始信息:' . static::inlineText($content));
+                        $this->getMigrationScanner()->logInfo('原始信息:' . Utils::inlineText($content));
 
                         foreach ($this->contentsFilters as $k => $filter)
                         {
                             $content = $filter($content);
                         }
 
-                        $this->getMigrationScanner()->logInfo('过滤后信息:' . static::inlineText($content));
+                        $this->getMigrationScanner()->logInfo('过滤后信息:' . Utils::inlineText($content));
 
                         $postId = $postTable->calcPk();
                         //构造文件数组，写入文件表
@@ -1937,7 +1937,7 @@
             });
 
             $this->queueMissionManager->logInfo(implode([
-                "convertM3u8Queue，视频大小: " . static::formatBytes($videoSize) . "，m3u8 : {$tsFullPath}",
+                "convertM3u8Queue，视频大小: " . Utils::formatBytes($videoSize) . "，m3u8 : {$tsFullPath}",
             ]));
 
             $this->convertM3u8Queue->addNewMission($mission);
@@ -1955,7 +1955,7 @@
             $queue->setMissionProcessor(new CallableMissionProcessor());
 
             $queue->setOnEachMissionStartExec(function(CallableMission $mission) {
-                $msg = "转换：【" . static::formatBytes($mission->videoSize) . "】【{$mission->videoFullPath}】";
+                $msg = "转换：【" . Utils::formatBytes($mission->videoSize) . "】【{$mission->videoFullPath}】";
                 $this->queueMissionManager->logInfo("{$msg}");
             });
 
@@ -2498,7 +2498,7 @@
                     ],
                 ])->count();
 
-                $this->queueMissionManager->logInfo($gropId . ',文件个数:[' . $fileCount . ']--' . static::inlineText($content));
+                $this->queueMissionManager->logInfo($gropId . ',文件个数:[' . $fileCount . ']--' . Utils::inlineText($content));
 
                 if (!$fileCount && !$content)
                 {
@@ -2563,11 +2563,6 @@
             }
         }
 
-        public function deleteVideoSourceFile(): void
-        {
-
-        }
-
         /*-------------------------------------------------------------------*/
 
         protected function initQueue(): static
@@ -2600,62 +2595,6 @@
         }
 
         /*-------------------------------------------------------------------*/
-
-        public static function truncateUtf8String($string, $length): string
-        {
-            // 使用 mb_substr 来截取字符串，确保是按字符而非字节截取
-            return mb_substr($string, 0, $length, 'UTF-8');
-        }
-
-        public static function inlineText(string $subject): array|string|null
-        {
-            $result = preg_replace('#\s+#iu', ' ', $subject);
-            $result = static::cleanText($result);
-
-            return $result;
-        }
-
-        public static function cleanText(string $subject): array|string|null
-        {
-            $result = trim($subject);
-
-            //连续两个以上的换行符减少为两个
-            $result = preg_replace('/\n{3,}/im', "\n\n", $result);
-
-            //最前面的问号去掉
-            $result = preg_replace('/^[\?\s]+/ium', '', $result);
-
-            //最后的问号如果个数超过2个，最多保留一个
-            $result = preg_replace('/\?{2,}$/ium', '?', $result);
-
-            //中间的问号，最多保留一个
-            $result = preg_replace('/\?{2,}/ium', '?', $result);
-
-            //连续空格最多保留一个
-            $result = preg_replace('/[ \t]+/ium', ' ', $result);
-
-            return $result;
-        }
-
-        public static function formatBytes($bytes): string
-        {
-            $units = [
-                'B',
-                'KB',
-                'MB',
-                'GB',
-                'TB',
-            ];
-
-            $unit = 0;
-            while ($bytes >= 1024 && $unit < count($units) - 1)
-            {
-                $bytes /= 1024;
-                $unit++;
-            }
-
-            return sprintf("%.2f %s", $bytes, $units[$unit]);
-        }
 
         // cover-9110579685264727-1
         protected static function parseFileNameId($fileName): array

@@ -8,27 +8,23 @@
      * -------------------------------------------------------------------------------
      * */
 
-    $manager = new \Coco\tgMedia\Manager(
-        $bootToken,
-        $apiId,
-        $apiHash,
-        __DIR__ . '/../data',
-        'tg_media'
-    );
+    $manager = new \Coco\tgMedia\Manager($bootToken, $apiId, $apiHash, __DIR__ . '/../data', 'tg_media');
 
     $manager->setDebug(true);
     $manager->setTelegramMediaMaxDownloading(10);
     $manager->setTelegramMediaDownloadDelayInSecond(2);
     $manager->setTelegramMediaMaxDownloadTimeout(120);
     $manager->setMediaOwner('www');
-//    $manager->setTelegramMediaStorePath(__DIR__ . '/medias');
-    $manager->setTelegramMediaMaxFileSize(3000 * 1024 * 1024);
 
-    $url = 'http://127.0.0.1:30001/tg/scripts/endpoint/type1.php';
-    $manager->setTelegramWebHookUrl($url);
+//    $manager->setTelegramMediaStorePath(__DIR__ . '/medias');
+
+    $manager->setTelegramMediaMaxFileSize($maxFileSize);
+
+    $manager->setTelegramWebHookUrl($webHookUrl);
     $manager->setRedisConfig(db: 12);
 
-    $manager->setMysqlConfig(db: 'tg_media', username: 'root', password: 'root');
+    $manager->setMysqlConfig(host: $mysqlHost, db: $mysqlDb, username: $mysqlUsername, password: $mysqlPassword);
+
     $manager->setLocalServerPort(8081);
     $manager->setStatisticsPort(8082);
 
@@ -43,7 +39,6 @@
         {
             if (str_starts_with($videoFileInfo[$fileTab->getMimeTypeField()], 'video'))
             {
-                //如果是视频，就抽个封面图
                 //如果是视频，就抽个封面图
                 $manager->makeVideoCoverToQueue($videoFileInfo, function($path) use ($manager) {
                     $path = $manager->telegramMediaStorePath . '/' . $path;

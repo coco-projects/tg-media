@@ -207,7 +207,7 @@
             {
                 $this->messageLoadType = static::MSG_CARRIER_TYPE_TEXT;
 
-                if (isset($this->messageBody['text']) && count($this->messageBody['entities']))
+                if (isset($this->messageBody['text']) && isset($this->messageBody['entities']))
                 {
                     $this->text = static::parseCaptionWithEntities($this->messageBody['text'], $this->messageBody['entities']);
                     $this->tags = static::extractHashtags($this->messageBody['text'], $this->messageBody['entities']);
@@ -302,7 +302,7 @@
 
             if (isset($this->messageBody['caption']))
             {
-                if (isset($this->messageBody['caption_entities']) && count($this->messageBody['caption_entities']))
+                if (isset($this->messageBody['caption_entities']) && isset($this->messageBody['caption_entities']))
                 {
                     $this->caption = static::parseCaptionWithEntities($this->messageBody['caption'], $this->messageBody['caption_entities']);
                     $this->tags    = static::extractHashtags($this->messageBody['caption'], $this->messageBody['caption_entities']);
@@ -352,7 +352,6 @@
 
         protected static function getExt(array $msgBody, string $default = '-'): string
         {
-
             if (isset($msgBody['mime_type']) && isset(static::$mimeTypesMap[$msgBody['mime_type']]))
             {
                 $ext = static::$mimeTypesMap[$msgBody['mime_type']];

@@ -7,7 +7,6 @@
 
     foreach ($files as $k => $videoFileInfo)
     {
-
         if (str_starts_with($videoFileInfo[$fileTab->getMimeTypeField()], 'video'))
         {
             //如果是视频，就抽个封面图

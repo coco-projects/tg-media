@@ -4,15 +4,19 @@
 //    $info = $manager->getAllPosts(1120081060969840981, 5);
     $info = $manager->getAllPosts();
 
-    print_r($info);  exit;;
+//    print_r($info);
+    var_export($info);
+    exit;;
 
-    foreach ($info as $k => $v)
-    {
-        echo '----------------------------';
-        echo PHP_EOL;
-        echo $k . ' -> ' . $v['post']['contents'];
-        echo PHP_EOL;
-        echo PHP_EOL;
 
-    }
+    /*
+        foreach ($info as $k => $v)
+        {
+            echo '----------------------------';
+            echo PHP_EOL;
+            echo $k . ' -> ' . $v['post']['contents'];
+            echo PHP_EOL;
+            echo PHP_EOL;
 
+        }
+    */

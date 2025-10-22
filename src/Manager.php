@@ -879,7 +879,6 @@
                 ->stop($this->scannerFileMove);
         }
 
-
         /**
          * 扫描状态为 2 的记录，根据media_group_id分组，media的个数等于redis里保存的个数说明文件都处理完了，
          * 先把文件 path 写入 file 表
@@ -2237,6 +2236,7 @@
             $images    = [];
             $audios    = [];
             $documents = [];
+            $teleFiles = [];
 
             foreach ($posts as $k => $post)
             {
@@ -2279,7 +2279,7 @@
                     }
                     else
                     {
-                        $images[$fileInfo[$fileTable->getPostIdField()]][] = $fileInfo;
+                        $images[$fileInfo[$fileTable->getPostIdField()]][$pathId] = $fileInfo;
                     }
                 }
                 elseif (str_starts_with($fileInfo[$fileTable->getMimeTypeField()], 'video') || ($fileInfo[$fileTable->getMimeTypeField()] == 'application/x-mpegURL'))
@@ -2296,6 +2296,18 @@
                 else
                 {
                     $documents[$fileInfo[$fileTable->getPostIdField()]][] = $fileInfo;
+                }
+
+                if ($fileInfo[$fileTable->getFileIdField()])
+                {
+                    $teleFiles[$fileInfo[$fileTable->getPostIdField()]][] = [
+                        $fileTable->getFileIdField()         => $fileInfo[$fileTable->getFileIdField()],
+                        $fileTable->getFileUniqueIdField()   => $fileInfo[$fileTable->getFileUniqueIdField()],
+                        $fileTable->getFileSizeField()       => $fileInfo[$fileTable->getFileSizeField()],
+                        $fileTable->getFileNameField()       => $fileInfo[$fileTable->getFileNameField()],
+                        $fileTable->getOriginExtField()      => $fileInfo[$fileTable->getOriginExtField()],
+                        $fileTable->getOriginMimeTypeField() => $fileInfo[$fileTable->getOriginMimeTypeField()],
+                    ];
                 }
             }
 
@@ -2325,6 +2337,11 @@
             foreach ($documents as $postId_ => $document)
             {
                 $media[$postId_]['document'] = $document;
+            }
+
+            foreach ($teleFiles as $postId_ => $teleFile)
+            {
+                $media[$postId_]['tele_files'] = $teleFile;
             }
 
             return $media;

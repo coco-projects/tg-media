@@ -2,7 +2,7 @@
 
     require __DIR__ . '/../common.php';
 
-    $raw = file_get_contents(__DIR__ . '/test1.json');
+    $raw = file_get_contents(__DIR__ . '/test.json');
 
     $lines = preg_split('#[\r\n]+#', $raw, -1, PREG_SPLIT_NO_EMPTY);
 

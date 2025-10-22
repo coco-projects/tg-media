@@ -2,7 +2,7 @@
 
     require '../common.php';
 
-    $isTest = !true;
+    $isTest = false;
 
     $raw = file_get_contents('php://input');
 
@@ -14,7 +14,7 @@
     $raw = json_decode($raw, 1);
     $raw = json_encode($raw, 256);
 
-    $basePath = 'raw_data1/';
+    $basePath = 'raw_input/';
 
     is_dir($basePath) or mkdir($basePath);
 
@@ -23,6 +23,8 @@
         try
         {
             $manager->webHookEndPoint($raw);
+            file_put_contents($basePath . '$_input.json', $raw . PHP_EOL, 8);
+
         }
         catch (\Exception $e)
         {

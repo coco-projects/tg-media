@@ -59,4 +59,38 @@
 
             return sprintf("%.2f %s", $bytes, $units[$unit]);
         }
+
+        public static function convertToBytes(string $size): float|int
+        {
+            // 使用正则表达式匹配数值和单位
+            if (preg_match('/^(\d+)([KMGT])B?$/i', $size, $matches))
+            {
+                $value = $matches[1];             // 数值部分
+                $unit  = strtoupper($matches[2]); // 单位部分，转为大写以便统一处理
+
+                // 根据单位进行转换
+                switch ($unit)
+                {
+                    case 'K':
+                        return $value * 1024; // KB -> 字节
+                    case 'M':
+                        return $value * 1024 * 1024; // MB -> 字节
+                    case 'G':
+                        return $value * 1024 * 1024 * 1024; // GB -> 字节
+                    case 'T':
+                        return $value * 1024 * 1024 * 1024 * 1024; // TB -> 字节
+                    default:
+                        return 0; // 不支持的单位
+                }
+            }
+            elseif (is_numeric($size))
+            {
+                return $size;
+            }
+            else
+            {
+                // 如果不匹配，返回 0 或抛出异常
+                return 0;
+            }
+        }
     }

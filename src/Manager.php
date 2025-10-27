@@ -2200,24 +2200,59 @@
             return $data;
         }
 
-        public function getAllPosts($continuePostId = null, $row = 100): array
+        /**
+         * 指定一个postId，获取这个 postId 后面指定条数的post
+         *
+         * @param int $continuePostId
+         * @param int $row
+         *
+         * @return array
+         */
+        public function getPostByContinuePostId(int $continuePostId, int $row = 100): array
+        {
+            $postTable = $this->getPostTable();
+
+            $postWhere   = [];
+            $postWhere[] = [
+                $postTable->getPkField(),
+                '>',
+                $continuePostId,
+            ];
+
+            return $this->getPostsByCondition($postWhere, 0, $row);
+        }
+
+        /**
+         * 指定一个id数组，获取这些id对应的post
+         *
+         * @param array $postIds
+         * @param int   $offset
+         * @param int   $row
+         *
+         * @return array
+         */
+        public function getPostByPostIds(array $postIds = [], int $offset = 0, int $row = 100): array
+        {
+            $postTable = $this->getPostTable();
+
+            $postWhere   = [];
+            $postWhere[] = [
+                $postTable->getPkField(),
+                'in',
+                $postIds,
+            ];
+
+            return $this->getPostsByCondition($postWhere, $offset, $row);
+        }
+
+
+        public function getPostsByCondition(array $postWhere = [], int $offset = 0, int $row = 100): array
         {
             $postTable = $this->getPostTable();
             $fileTable = $this->getFileTable();
             $msgTable  = $this->getMessageTable();
 
-            $postWhere = [];
-
-            if ($continuePostId)
-            {
-                $postWhere[] = [
-                    $postTable->getPkField(),
-                    '>',
-                    $continuePostId,
-                ];
-            }
-
-            $posts = $postTable->tableIns()->where($postWhere)->limit(0, $row)->select();
+            $posts = $postTable->tableIns()->where($postWhere)->limit($offset, $row)->select();
 
             $postsIds = $posts->column($postTable->getPkField());
 

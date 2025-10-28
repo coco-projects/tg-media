@@ -1066,6 +1066,7 @@
                             $postTable->getTypeIdField()       => $baseMessageInfo[$msgTable->getTypeIdField()],
                             $postTable->getContentsField()     => $content,
                             $postTable->getMediaGroupIdField() => $mediaGroupId,
+                            $postTable->getHashtagsField()     => $baseMessageInfo[$msgTable->getHashtagsField()],
                             $postTable->getDateField()         => $baseMessageInfo[$msgTable->getDateField()],
                             $postTable->getTimeField()         => time(),
                         ]);

@@ -4,6 +4,6 @@
 
     require '../common.php';
 
-    $method = TableRegistry::makeMethod($manager->getMessageTable()->getFieldsSqlMap());
+    $method = TableRegistry::makeMethod($manager->getPostTable()->getFieldsSqlMap());
 
     print_r($method);

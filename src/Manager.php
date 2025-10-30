@@ -1621,7 +1621,7 @@
             }
         }
 
-        protected function resolveEndponit($endpoint, array $query = []): ?string
+        public function resolveEndponit($endpoint, array $query = []): ?string
         {
             $queryStr = '';
             if (count($query))

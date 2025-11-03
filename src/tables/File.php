@@ -21,6 +21,7 @@
             "media_group_id"   => "`__FIELD__NAME__` bigint(11) unsigned NOT NULL DEFAULT '0' COMMENT 'media_group_id',",
             "ext"              => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT '当前格式后缀，视频文件转m3u8后的格式',",
             "mime_type"        => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT '当前格式后缀，视频文件转m3u8后的mime_type',",
+            "media_type"       => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT 'media_type',",
             "origin_ext"       => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT '源文件后缀，转m3u8之前的视频格式',",
             "origin_mime_type" => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT '源文件后缀，转m3u8之前的视频mime_type',",
             "time"             => "`__FIELD__NAME__` INT (10) UNSIGNED NOT NULL DEFAULT '0',",
@@ -151,6 +152,18 @@
         public function getMimeTypeField(): string
         {
             return $this->getFieldName('mime_type');
+        }
+
+        public function setMediaTypeField(string $value): static
+        {
+            $this->setFeildName('media_type', $value);
+
+            return $this;
+        }
+
+        public function getMediaTypeField(): string
+        {
+            return $this->getFieldName('media_type');
         }
 
         public function setOriginExtField(string $value): static

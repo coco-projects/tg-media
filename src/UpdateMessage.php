@@ -40,6 +40,7 @@
         public int    $chatType           = 0;
         public string $mediaGroupId       = '';
         public string $caption            = '';
+        public string $mediaType          = '';
         public string $text               = '';
         public string $fileId             = '';
         public string $fileUniqueId       = '';
@@ -229,8 +230,9 @@
                 $this->fileSize        = $this->messageBody['video']['file_size'];
                 $this->fileName        = $this->messageBody['video']['file_name'] ?? '';
 
-                $this->mimeType = static::getMimeType($this->messageBody['video']);
-                $this->ext      = static::getExt($this->messageBody['video']);
+                $this->mimeType  = static::getMimeType($this->messageBody['video']);
+                $this->ext       = static::getExt($this->messageBody['video']);
+                $this->mediaType = 'video';
             }
 
             if (isset($this->messageBody['photo']))
@@ -242,8 +244,9 @@
                 $this->fileUniqueId    = $phonoList[0]['file_unique_id'];
                 $this->fileSize        = $phonoList[0]['file_size'];
 
-                $this->mimeType = static::getMimeType($phonoList[0], 'image/jpeg');
-                $this->ext      = static::getExt($phonoList[0], 'jpg');
+                $this->mimeType  = static::getMimeType($phonoList[0], 'image/jpeg');
+                $this->ext       = static::getExt($phonoList[0], 'jpg');
+                $this->mediaType = 'photo';
             }
 
             if (isset($this->messageBody['audio']))
@@ -254,8 +257,9 @@
                 $this->fileSize        = $this->messageBody['audio']['file_size'];
                 $this->fileName        = $this->messageBody['audio']['file_name'] ?? '';
 
-                $this->mimeType = static::getMimeType($this->messageBody['audio']);
-                $this->ext      = static::getExt($this->messageBody['audio']);
+                $this->mimeType  = static::getMimeType($this->messageBody['audio']);
+                $this->ext       = static::getExt($this->messageBody['audio']);
+                $this->mediaType = 'audio';
             }
 
             if (isset($this->messageBody['document']))
@@ -266,8 +270,9 @@
                 $this->fileSize        = $this->messageBody['document']['file_size'];
                 $this->fileName        = $this->messageBody['document']['file_name'] ?? '';
 
-                $this->mimeType = static::getMimeType($this->messageBody['document']);
-                $this->ext      = static::getExt($this->messageBody['document']);
+                $this->mimeType  = static::getMimeType($this->messageBody['document']);
+                $this->ext       = static::getExt($this->messageBody['document']);
+                $this->mediaType = 'document';
             }
 
             /**

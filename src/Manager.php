@@ -1030,6 +1030,7 @@
                                     $fileTable->getMimeTypeField()       => $messageInfo[$msgTable->getMimeTypeField()],
                                     $fileTable->getOriginExtField()      => $messageInfo[$msgTable->getExtField()],
                                     $fileTable->getOriginMimeTypeField() => $messageInfo[$msgTable->getMimeTypeField()],
+                                    $fileTable->getMediaTypeField()      => $messageInfo[$msgTable->getMediaTypeField()],
                                     $fileTable->getBotIdField()          => $messageInfo[$msgTable->getBotIdField()],
                                     $fileTable->getFileIdField()         => $messageInfo[$msgTable->getFileIdField()],
                                     $fileTable->getFileUniqueIdField()   => $messageInfo[$msgTable->getFileUniqueIdField()],
@@ -1604,6 +1605,7 @@
                     $msgTable->getDateField()               => $msg->date,
                     $msgTable->getExtField()                => $msg->ext,
                     $msgTable->getMimeTypeField()           => $msg->mimeType,
+                    $msgTable->getMediaTypeField()          => $msg->mediaType,
                     $msgTable->getHashtagsField()           => implode(',', $msg->tags),
                     $msgTable->getTypeIdField()             => $typeId,
                     $msgTable->getTimeField()               => time(),
@@ -2343,6 +2345,7 @@
                         $fileTable->getFileNameField()       => $fileInfo[$fileTable->getFileNameField()],
                         $fileTable->getOriginExtField()      => $fileInfo[$fileTable->getOriginExtField()],
                         $fileTable->getOriginMimeTypeField() => $fileInfo[$fileTable->getOriginMimeTypeField()],
+                        $fileTable->getMediaTypeField()      => $fileInfo[$fileTable->getMediaTypeField()],
                     ];
                 }
             }

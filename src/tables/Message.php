@@ -27,6 +27,7 @@
             "file_name"            => "`__FIELD__NAME__` text COLLATE utf8mb4_unicode_520_ci COMMENT '文件名',",
             "chat_type"            => "`__FIELD__NAME__` tinyint(4) DEFAULT NULL COMMENT 'private=1, group=2, supergroup=3, channel=4',",
             "mime_type"            => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT 'mime_type',",
+            "media_type"           => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT 'media_type',",
             "ext"                  => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT '后缀',",
             "chat_source_type"     => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT 'channel or user',",
             "chat_source_username" => "`__FIELD__NAME__` char(255) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '' COMMENT 'username',",
@@ -221,6 +222,18 @@
             return $this->getFieldName('mime_type');
         }
 
+        public function setMediaTypeField(string $value): static
+        {
+            $this->setFeildName('media_type', $value);
+
+            return $this;
+        }
+
+        public function getMediaTypeField(): string
+        {
+            return $this->getFieldName('media_type');
+        }
+
         public function setExtField(string $value): static
         {
             $this->setFeildName('ext', $value);
@@ -305,18 +318,6 @@
             return $this->getFieldName('caption');
         }
 
-        public function setHashtagsField(string $value): static
-        {
-            $this->setFeildName('hashtags', $value);
-
-            return $this;
-        }
-
-        public function getHashtagsField(): string
-        {
-            return $this->getFieldName('hashtags');
-        }
-
         public function setTextField(string $value): static
         {
             $this->setFeildName('text', $value);
@@ -327,6 +328,18 @@
         public function getTextField(): string
         {
             return $this->getFieldName('text');
+        }
+
+        public function setHashtagsField(string $value): static
+        {
+            $this->setFeildName('hashtags', $value);
+
+            return $this;
+        }
+
+        public function getHashtagsField(): string
+        {
+            return $this->getFieldName('hashtags');
         }
 
         public function setRawField(string $value): static

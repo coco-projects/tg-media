@@ -2393,6 +2393,7 @@
             $postTable = $this->getPostTable();
             $fileTable = $this->getFileTable();
 
+            //删除msg表
             $msgTable->tableIns()->where([
                 [
                     $msgTable->getMediaGroupIdField(),
@@ -2401,6 +2402,7 @@
                 ],
             ])->delete();
 
+            //删除生成好信息的 post
             $postTable->tableIns()->where([
                 [
                     $postTable->getMediaGroupIdField(),
@@ -2409,6 +2411,24 @@
                 ],
             ])->delete();
 
+            //查出文件路径
+            $filePaths = $fileTable->tableIns()->where([
+                [
+                    $fileTable->getMediaGroupIdField(),
+                    'in',
+                    $mediaGroupIds,
+                ],
+            ])->column($fileTable->getPathField());
+
+            //删除文件
+            foreach ($filePaths as $targetPath)
+            {
+                $target = rtrim($this->telegramMediaStorePath) . '/' . ltrim($targetPath);
+
+                @unlink($target);
+            }
+
+            //删除文件表
             $fileTable->tableIns()->where([
                 [
                     $fileTable->getMediaGroupIdField(),

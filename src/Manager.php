@@ -1430,7 +1430,7 @@
             $this->container->set('telegramApiGuzzle', function(Container $container) {
                 return new Client([
                     'timeout' => 50,
-                    'debug'   => $this->debug,
+                    'debug'   => false
                 ]);
             });
 

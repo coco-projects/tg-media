@@ -91,11 +91,11 @@
         const FILE_STATUS_2_MOVED            = 2;
         const FILE_STATUS_3_IN_POSTED        = 3;
 
-        const CDN_PREFETCH_QUEUE     = 'CDN_PREFETCH';
+//        const CDN_PREFETCH_QUEUE     = 'CDN_PREFETCH';
         const MAKE_VIDEO_COVER_QUEUE = 'MAKE_VIDEO_COVER';
         const CONVERT_M3U8_QUEUE     = 'CONVERT_M3U8';
 
-        public Queue $cdnPrefetchQueue;
+//        public Queue $cdnPrefetchQueue;
         public Queue $makeVideoCoverQueue;
         public Queue $convertM3u8Queue;
 
@@ -2011,6 +2011,8 @@
         }
 
         /*-------------------------------------------------------------------*/
+     /*
+
         public function cdnPrefetchToQueue(array $videoFileInfo, callable $callback, $referer = ''): void
         {
             $fileTab = $this->getFileTable();
@@ -2060,7 +2062,7 @@
             $queue->addResultProcessor(new CustomResultProcessor($success, $catch));
 
             $queue->listen();
-        }
+        }*/
 
         /*-------------------------------------------------------------------*/
 
@@ -2626,7 +2628,7 @@
 
         protected function initQueue(): static
         {
-            $this->cdnPrefetchQueue    = $this->queueMissionManager->initQueue(static::CDN_PREFETCH_QUEUE);
+//            $this->cdnPrefetchQueue    = $this->queueMissionManager->initQueue(static::CDN_PREFETCH_QUEUE);
             $this->makeVideoCoverQueue = $this->queueMissionManager->initQueue(static::MAKE_VIDEO_COVER_QUEUE);
             $this->convertM3u8Queue    = $this->queueMissionManager->initQueue(static::CONVERT_M3U8_QUEUE);
 

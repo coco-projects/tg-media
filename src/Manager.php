@@ -549,9 +549,20 @@
                     foreach ($data as $k => $v)
                     {
                         $ids[] = $v[$msgTable->getPkField()];
+
+                        $this->getDownloadMediaScanner()->logInfo(implode('', [
+                            '写入队列：',
+                            $v[$msgTable->getPkField()],
+                            ' -> (',
+                            Utils::formatBytes($v[$msgTable->getFileSizeField()]),
+                            ')/(',
+                            Utils::formatBytes($this->telegramMediaMaxFileSize),
+                            ')',
+                            $v[$msgTable->getFileSizeField()] >= $this->telegramMediaMaxFileSize ? '【文件大小超过，有问题！】' : '',
+                        ]));
                     }
 
-                    $this->getDownloadMediaScanner()->logInfo(count($ids) . '个文件写入下载');
+                    $this->getDownloadMediaScanner()->logInfo(count($ids) . ' 个文件写入下载');
 
                     //更新下载状态和开始下载时间
                     $timeNow = time();

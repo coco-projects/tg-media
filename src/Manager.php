@@ -1714,7 +1714,7 @@
             $ffmpegConfig = [
                 'ffmpeg.binaries'  => dirname(__DIR__) . '/tg-bot-server/bin/ffmpeg',
                 'ffprobe.binaries' => dirname(__DIR__) . '/tg-bot-server/bin/ffprobe',
-                'timeout'          => 36000,
+                'timeout'          => 86400,
                 'ffmpeg.threads'   => 12,
             ];
 
@@ -1906,7 +1906,7 @@
             $ffmpegConfig = [
                 'ffmpeg.binaries'  => dirname(__DIR__) . '/tg-bot-server/bin/ffmpeg',
                 'ffprobe.binaries' => dirname(__DIR__) . '/tg-bot-server/bin/ffprobe',
-                'timeout'          => 36000,
+                'timeout'          => 86400,
                 'ffmpeg.threads'   => 12,
             ];
 

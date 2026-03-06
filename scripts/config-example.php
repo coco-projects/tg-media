@@ -11,4 +11,5 @@
     $mysqlDb       = 'tg_media';
 
     $maxFileSize = 3000 * 1024 * 1024;
+    $threads =4;
 

@@ -14,6 +14,6 @@
                 $path = $manager->telegramMediaStorePath . '/' . $path;
 
                 return $path;
-            });
+            },15,$threads);
         }
     }

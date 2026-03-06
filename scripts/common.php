@@ -40,18 +40,18 @@
             if (str_starts_with($videoFileInfo[$fileTab->getMimeTypeField()], 'video'))
             {
                 //如果是视频，就抽个封面图
-                $manager->makeVideoCoverToQueue($videoFileInfo, function($path) use ($manager) {
+                $manager->makeVideoCoverToQueue($videoFileInfo, function($path) use ($manager, $threads) {
                     $path = $manager->telegramMediaStorePath . '/' . $path;
 
                     return $path;
-                });
+                }, $threads);
 
                 //转码为m3u8
-                $manager->convertM3u8ToQueue($videoFileInfo, function($path) use ($manager) {
+                $manager->convertM3u8ToQueue($videoFileInfo, function($path) use ($manager, $threads) {
                     $path = $manager->telegramMediaStorePath . '/' . $path;
 
                     return $path;
-                });
+                }, 15, $threads);
             }
 
             /*

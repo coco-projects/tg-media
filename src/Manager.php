@@ -1441,7 +1441,7 @@
             $this->container->set('telegramApiGuzzle', function(Container $container) {
                 return new Client([
                     'timeout' => 50,
-                    'debug'   => false
+                    'debug'   => false,
                 ]);
             });
 
@@ -1678,7 +1678,7 @@
         }
 
         /*-------------------------------------------------------------------*/
-        public function makeVideoCoverToQueue(array $videoFileInfo, callable $callback): void
+        public function makeVideoCoverToQueue(array $videoFileInfo, callable $callback, int $threads = 12, int $timeout = 86400): void
         {
             $fileTab = $this->getFileTable();
 
@@ -1714,8 +1714,8 @@
             $ffmpegConfig = [
                 'ffmpeg.binaries'  => dirname(__DIR__) . '/tg-bot-server/bin/ffmpeg',
                 'ffprobe.binaries' => dirname(__DIR__) . '/tg-bot-server/bin/ffprobe',
-                'timeout'          => 86400,
-                'ffmpeg.threads'   => 12,
+                'timeout'          => $timeout,
+                'ffmpeg.threads'   => $threads,
             ];
 
             $ffprobe  = \FFMpeg\FFProbe::create($ffmpegConfig);
@@ -1867,7 +1867,7 @@
             1080,
             //            1440,
             //            2160,
-        ], bool                                  $deleteSource = false): void
+        ], bool                                  $deleteSource = false, int $timeout = 86400): void
         {
             $fileTab = $this->getFileTable();
 
@@ -1906,8 +1906,8 @@
             $ffmpegConfig = [
                 'ffmpeg.binaries'  => dirname(__DIR__) . '/tg-bot-server/bin/ffmpeg',
                 'ffprobe.binaries' => dirname(__DIR__) . '/tg-bot-server/bin/ffprobe',
-                'timeout'          => 86400,
-                'ffmpeg.threads'   => 12,
+                'timeout'          => $timeout,
+                'ffmpeg.threads'   => $threads,
             ];
 
             $mission                = new CallableMission();
@@ -1932,7 +1932,7 @@
                 $keyUri,
             ]);
 
-            $mission->setCallback(function($videoFullPath, $tsFullPath, $keyFullPath, $keyUri) use ($ffmpegConfig, $sectionSeconds, $threads, $streamFormat, $representations) {
+            $mission->setCallback(function($videoFullPath, $tsFullPath, $keyFullPath, $keyUri) use ($ffmpegConfig, $sectionSeconds, $streamFormat, $representations) {
                 $ffmpeg = \Streaming\FFMpeg::create($ffmpegConfig);
 
                 $video = $ffmpeg->open($videoFullPath);
@@ -1946,7 +1946,8 @@
                     $v = $video->hls()->hevc();
                 }
 
-                $v->encryption($keyFullPath, $keyUri, 5)->setHlsTime((string)$sectionSeconds)
+                $v->encryption($keyFullPath, $keyUri, 5)
+                    ->setHlsTime((string)$sectionSeconds)
                     ->autoGenerateRepresentations($representations)->save($tsFullPath);
             });
 
@@ -2022,58 +2023,58 @@
         }
 
         /*-------------------------------------------------------------------*/
-     /*
+        /*
 
-        public function cdnPrefetchToQueue(array $videoFileInfo, callable $callback, $referer = ''): void
-        {
-            $fileTab = $this->getFileTable();
-            $path    = $videoFileInfo[$fileTab->getPathField()];
+           public function cdnPrefetchToQueue(array $videoFileInfo, callable $callback, $referer = ''): void
+           {
+               $fileTab = $this->getFileTable();
+               $path    = $videoFileInfo[$fileTab->getPathField()];
 
-            $mission = new HttpMission();
+               $mission = new HttpMission();
 
-            $url = call_user_func_array($callback, [$path]);
-            $mission->setTimeout(30000);
-            $mission->setUrl($url);
-            $mission->addClientOptions('verify', false);
-            $mission->addClientOptions('debug', $this->debug);
-            $mission->addClientOptions('headers', ['referer' => $referer]);
+               $url = call_user_func_array($callback, [$path]);
+               $mission->setTimeout(30000);
+               $mission->setUrl($url);
+               $mission->addClientOptions('verify', false);
+               $mission->addClientOptions('debug', $this->debug);
+               $mission->addClientOptions('headers', ['referer' => $referer]);
 
-            $mission->url = $url;
+               $mission->url = $url;
 
-            $this->queueMissionManager->logInfo(implode([
-                'cdnPrefetchQueue，url: ' . $url,
-            ]));
+               $this->queueMissionManager->logInfo(implode([
+                   'cdnPrefetchQueue，url: ' . $url,
+               ]));
 
-            $this->cdnPrefetchQueue->addNewMission($mission);
-        }
+               $this->cdnPrefetchQueue->addNewMission($mission);
+           }
 
-        public function listenCdnPrefetch(): void
-        {
-            $queue = $this->cdnPrefetchQueue;
+           public function listenCdnPrefetch(): void
+           {
+               $queue = $this->cdnPrefetchQueue;
 
-            $queue->setContinuousRetry(true);
-            $queue->setDelayMs(0);
-            $queue->setEnable(true);
-            $queue->setMaxTimes(5);
-            $queue->setIsRetryOnError(true);
-            $queue->setMissionProcessor(new GuzzleMissionProcessor());
+               $queue->setContinuousRetry(true);
+               $queue->setDelayMs(0);
+               $queue->setEnable(true);
+               $queue->setMaxTimes(5);
+               $queue->setIsRetryOnError(true);
+               $queue->setMissionProcessor(new GuzzleMissionProcessor());
 
-            $success = function(HttpMission $mission) {
-//                只需要请求一次，不需要使用结果
-//                $response = $mission->getResult();
-//                $contents = $response->getBody()->getContents();
+               $success = function(HttpMission $mission) {
+   //                只需要请求一次，不需要使用结果
+   //                $response = $mission->getResult();
+   //                $contents = $response->getBody()->getContents();
 
-                $this->queueMissionManager->logInfo("cdnPrefetch success【{$mission->url}】");
-            };
+                   $this->queueMissionManager->logInfo("cdnPrefetch success【{$mission->url}】");
+               };
 
-            $catch = function(HttpMission $mission, \Exception $exception) {
-                $this->queueMissionManager->logError("error【{$exception->getMessage()}】");
-            };
+               $catch = function(HttpMission $mission, \Exception $exception) {
+                   $this->queueMissionManager->logError("error【{$exception->getMessage()}】");
+               };
 
-            $queue->addResultProcessor(new CustomResultProcessor($success, $catch));
+               $queue->addResultProcessor(new CustomResultProcessor($success, $catch));
 
-            $queue->listen();
-        }*/
+               $queue->listen();
+           }*/
 
         /*-------------------------------------------------------------------*/
 

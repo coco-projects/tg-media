@@ -2262,7 +2262,7 @@
             return $this->getPostsByCondition($postWhere, $offset, $row);
         }
 
-
+        //指定where数组条件，查询文章
         public function getPostsByCondition(array $postWhere = [], int $offset = 0, int $row = 100): array
         {
             $postTable = $this->getPostTable();
@@ -2608,6 +2608,7 @@
             }
         }
 
+        //删除所有redis中的日志
         public function deleteRedisLog(): void
         {
             $redis = $this->getRedisClient();
@@ -2622,6 +2623,7 @@
             }
         }
 
+        //删除所有redis缓存
         public function deleteCache(): void
         {
             $redis = $this->getRedisClient();
@@ -2634,6 +2636,26 @@
             {
                 $redis->del($key);
             }
+        }
+
+        public function deleteAllPosts(): void
+        {
+            $postTable = $this->getPostTable();
+            $fileTable = $this->getFileTable();
+            $msgTable  = $this->getMessageTable();
+
+            $postTable->truncate();
+            $fileTable->truncate();
+            $msgTable->truncate();
+
+            $launcher = new Launcher('rm -rf ' . $this->telegramMediaStorePath . '/*');
+            $launcher->setUseNohup(false);
+
+            $launcher->setStandardLogger('truncate');
+            $launcher->addStdoutHandler(callback: Launcher::getStandardFormatter());
+            $launcher->addRedisHandler(callback: Launcher::getStandardFormatter());
+
+            $launcher->launch();
         }
 
         /*-------------------------------------------------------------------*/

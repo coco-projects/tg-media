@@ -1946,8 +1946,7 @@
                     $v = $video->hls()->hevc();
                 }
 
-                $v->encryption($keyFullPath, $keyUri, 5)
-                    ->setHlsTime((string)$sectionSeconds)
+                $v->encryption($keyFullPath, $keyUri, 5)->setHlsTime((string)$sectionSeconds)
                     ->autoGenerateRepresentations($representations)->save($tsFullPath);
             });
 
@@ -2188,33 +2187,12 @@
 
         public function getAllTableStatus(): array
         {
-            $data = [];
+            return $this->getMysqlClient()->getAllTableStatus();
+        }
 
-            $a                                         = $this->getMessageTable()->isTableCerated();
-            $data[$this->getMessageTable()->getName()] = [
-                'is_created' => (int)$a,
-                'count'      => $a ? (int)$this->getMessageTable()->getCount() : 0,
-            ];
-
-            $b                                      = $this->getTypeTable()->isTableCerated();
-            $data[$this->getTypeTable()->getName()] = [
-                'is_created' => (int)$b,
-                'count'      => $b ? (int)$this->getTypeTable()->getCount() : 0,
-            ];
-
-            $c                                      = $this->getFileTable()->isTableCerated();
-            $data[$this->getFileTable()->getName()] = [
-                'is_created' => (int)$c,
-                'count'      => $c ? (int)$this->getFileTable()->getCount() : 0,
-            ];
-
-            $d                                      = $this->getPostTable()->isTableCerated();
-            $data[$this->getPostTable()->getName()] = [
-                'is_created' => (int)$d,
-                'count'      => $d ? (int)$this->getPostTable()->getCount() : 0,
-            ];
-
-            return $data;
+        public function isAllTablesExists(): bool
+        {
+            return $this->getMysqlClient()->isAllTablesExists();
         }
 
         /**

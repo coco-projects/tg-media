@@ -140,16 +140,16 @@
         },
         {
             "name": "coco-project/command-builder",
-            "version": "v1.0.16",
+            "version": "v1.0.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/coco-projects/command-builder.git",
-                "reference": "532227f28d39b885d6d4fe5659704ac6c3b6cd98"
+                "reference": "d1c851e8fea492c11fecb5e5b1b0ac07c4eee27f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coco-projects/command-builder/zipball/532227f28d39b885d6d4fe5659704ac6c3b6cd98",
-                "reference": "532227f28d39b885d6d4fe5659704ac6c3b6cd98",
+                "url": "https://api.github.com/repos/coco-projects/command-builder/zipball/d1c851e8fea492c11fecb5e5b1b0ac07c4eee27f",
+                "reference": "d1c851e8fea492c11fecb5e5b1b0ac07c4eee27f",
                 "shasum": ""
             },
             "require": {
@@ -173,22 +173,22 @@
             ],
             "support": {
                 "issues": "https://github.com/coco-projects/command-builder/issues",
-                "source": "https://github.com/coco-projects/command-builder/tree/v1.0.16"
+                "source": "https://github.com/coco-projects/command-builder/tree/v1.0.18"
             },
-            "time": "2024-12-22T04:21:25+00:00"
+            "time": "2026-03-27T02:12:01+00:00"
         },
         {
             "name": "coco-project/command-runner",
-            "version": "v1.0.18",
+            "version": "v1.0.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/coco-projects/command-runner.git",
-                "reference": "adb43bf08cb443e5aa797f4c161b629c4e4f2f42"
+                "reference": "f8c7cf806509a5fc52b4909e3a32e7c624c534cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coco-projects/command-runner/zipball/adb43bf08cb443e5aa797f4c161b629c4e4f2f42",
-                "reference": "adb43bf08cb443e5aa797f4c161b629c4e4f2f42",
+                "url": "https://api.github.com/repos/coco-projects/command-runner/zipball/f8c7cf806509a5fc52b4909e3a32e7c624c534cd",
+                "reference": "f8c7cf806509a5fc52b4909e3a32e7c624c534cd",
                 "shasum": ""
             },
             "require": {
@@ -214,9 +214,9 @@
             ],
             "support": {
                 "issues": "https://github.com/coco-projects/command-runner/issues",
-                "source": "https://github.com/coco-projects/command-runner/tree/v1.0.18"
+                "source": "https://github.com/coco-projects/command-runner/tree/v1.0.20"
             },
-            "time": "2026-01-27T09:36:23+00:00"
+            "time": "2026-03-27T02:14:09+00:00"
         },
         {
             "name": "coco-project/logger",
@@ -301,16 +301,16 @@
         },
         {
             "name": "coco-project/queue",
-            "version": "v1.0.22",
+            "version": "v1.0.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/coco-projects/queue.git",
-                "reference": "a5930446a53410c0020b902c537e70f0e0cbff42"
+                "reference": "65bd77680b36bfbd534dcf89ca59c00f74c911d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coco-projects/queue/zipball/a5930446a53410c0020b902c537e70f0e0cbff42",
-                "reference": "a5930446a53410c0020b902c537e70f0e0cbff42",
+                "url": "https://api.github.com/repos/coco-projects/queue/zipball/65bd77680b36bfbd534dcf89ca59c00f74c911d9",
+                "reference": "65bd77680b36bfbd534dcf89ca59c00f74c911d9",
                 "shasum": ""
             },
             "require": {
@@ -344,9 +344,9 @@
             ],
             "support": {
                 "issues": "https://github.com/coco-projects/queue/issues",
-                "source": "https://github.com/coco-projects/queue/tree/v1.0.22"
+                "source": "https://github.com/coco-projects/queue/tree/v1.0.23"
             },
-            "time": "2026-03-17T13:52:44+00:00"
+            "time": "2026-03-27T02:21:07+00:00"
         },
         {
             "name": "coco-project/scanner",
@@ -434,16 +434,16 @@
         },
         {
             "name": "coco-project/table-manager",
-            "version": "v1.0.14",
+            "version": "v1.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/coco-projects/table-manager.git",
-                "reference": "4877a7755d30d200e85ce27bbb3c9409857383ef"
+                "reference": "8fec4875fcfd6a3060486b45945e914bdd6f9300"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/coco-projects/table-manager/zipball/4877a7755d30d200e85ce27bbb3c9409857383ef",
-                "reference": "4877a7755d30d200e85ce27bbb3c9409857383ef",
+                "url": "https://api.github.com/repos/coco-projects/table-manager/zipball/8fec4875fcfd6a3060486b45945e914bdd6f9300",
+                "reference": "8fec4875fcfd6a3060486b45945e914bdd6f9300",
                 "shasum": ""
             },
             "require": {
@@ -470,9 +470,9 @@
             ],
             "support": {
                 "issues": "https://github.com/coco-projects/table-manager/issues",
-                "source": "https://github.com/coco-projects/table-manager/tree/v1.0.14"
+                "source": "https://github.com/coco-projects/table-manager/tree/v1.0.17"
             },
-            "time": "2025-10-27T14:34:26+00:00"
+            "time": "2026-03-26T08:53:58+00:00"
         },
         {
             "name": "coco-project/timer",

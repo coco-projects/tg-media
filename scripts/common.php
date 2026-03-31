@@ -67,6 +67,13 @@
         }
     });
 
+    //message写入post前置处理
+    $manager->addContentsFilters(function($content) {
+
+        return $content;
+    });
+
+
     $manager->initServer();
 
     /*
